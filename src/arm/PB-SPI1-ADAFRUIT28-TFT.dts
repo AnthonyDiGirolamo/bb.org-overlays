@@ -1,0 +1,63 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/board/am335x-bbw-bbb-base.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/am33xx.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	fragment@0 {
+		target = <&ocp>;
+		__overlay__ {
+			P1_06_pinmux { status = "disabled"; };	/* LCD - CS */
+			P1_08_pinmux { status = "disabled"; };	/* LCD - SCLK */
+			P1_10_pinmux { status = "disabled"; };	/* LCD - MOSI? */
+			P1_12_pinmux { status = "disabled"; };	/* LCD - MISO? */
+			P2_01_pinmux { status = "disabled"; };	/* LCD - LED */
+			P2_17_pinmux { status = "disabled"; };	/* LCD - DC */
+			P2_19_pinmux { status = "disabled"; };	/* LCD - RST */
+		};
+	};
+
+	fragment@1 {
+		target = <&spi0>;
+		__overlay__ {
+			status = "okay";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			channel@0 {
+				status = "disabled";
+			};
+			channel@1 {
+				status = "disabled";
+			};
+
+			adafruit28: adafruit28@0{
+				compatible = "ilitek,ili9341";
+				pinctrl-names = "default";
+				pinctrl-0 = <
+					&P1_06_spi_cs_pin 	/* CS */
+					&P1_08_spi_sclk_pin 	/* SCLK */
+					&P1_10_spi_pin 		/* D0 (MOSI?) */
+					&P1_12_spi_pin 		/* D1 (MISO?) */
+					&P2_19_gpio_pin		/* RST */
+					&P2_17_gpio_pin		/* DC */
+					&P2_01_gpio_pin		/* LED */
+				>;
+				reg = <0>;
+				buswidth = <8>;
+				reset-gpios = <&gpio0 27 0>; /* P2_17 - 27 */
+				dc-gpios = <&gpio2 1 0>; /* P2_17 - 65 */
+				led-gpios = <&gpio1 18 1>; /* P2_01 - PWM1A */
+				debug = <1>;
+				spi-max-frequency = <32000000>;
+				rotate = <0>;
+				bgr;
+				fps = <30>;
+			};
+		};
+	};
+};
