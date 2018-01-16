@@ -304,6 +304,48 @@
 	};
 
 	fragment@3 {
+		target = <&am33xx_pinmux>;
+		__overlay__ {
+			pwm_bl_pins: pinmux_pwm_bl_pins {
+				pinctrl-single,pins = <
+					0x48 0x06       /* ehrpwm1a, MODE6 */
+				>;
+			};
+		};
+	};
+
+	fragment@4 {
+		target = <&epwmss1>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@5 {
+		target = <&ehrpwm1>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+
+	fragment@6 {
+		target = <&ocp>;
+		__overlay__ {
+			backlight {
+				compatible = "pwm-backlight";
+				pinctrl-names = "default";
+				pinctrl-0 = <&pwm_bl_pins>;
+				status = "okay";
+
+				pwms = <&ehrpwm1 0 500000 0>;
+				pwm-names = "backlight";
+				brightness-levels = <0 4 8 16 32 64 128 255>;
+				default-brightness-level = <7>; /* index to the array above */
+			};
+		};
+	};
+
+	fragment@3 {
 		target = <&spi0>;
 		__overlay__ {
 			#address-cells = <1>;
@@ -327,16 +369,16 @@
 					&P1_12_spi_pin		/* D1 (MISO?) */
 					&P2_19_gpio_pin		/* RST */
 					&P2_17_gpio_pin		/* DC */
-					&P2_01_gpio_pin		/* LED */
+					/* &P2_01_gpio_pin		/\* LED *\/ */
 				>;
 				reg = <0>;
 				buswidth = <8>;
 				reset-gpios = <&gpio0 27 0>; /* P2_17 - 27 */
 				dc-gpios = <&gpio2 1 0>; /* P2_17 - 65 */
-				led-gpios = <&gpio1 18 1>; /* P2_01 - PWM1A */
+				/* led-gpios = <&gpio1 18 1>; /\* P2_01 - PWM1A *\/ */
 				debug = <1>;
 				spi-max-frequency = <32000000>;
-				rotate = <0>;
+				rotate = <90>;
 				bgr;
 				fps = <30>;
 			};
